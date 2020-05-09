@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  mongodb:
+    build: .
+    container_name: smb_mount_test
+    cap_add:
+      - SYS_ADMIN
+      - DAC_READ_SEARCH
+    privileged: True
