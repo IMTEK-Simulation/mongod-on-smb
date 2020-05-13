@@ -1,1 +1,1 @@
-//tfsish01.public.ads.uni-freiburg.de/tfsish01/jh1130 /mnt/db cifs iocharset=utf8,credentials=/etc/smbcredentials,uid=mongodb,gid=mongodb,file_mode=0600,dir_mode=0700 0 0
+//tfsish01.public.ads.uni-freiburg.de/tfsish01/jh1130/DB /data/db cifs iocharset=utf8,credentials=/etc/smbcredentials,uid=mongodb,gid=mongodb,file_mode=0600,dir_mode=0700 0 0

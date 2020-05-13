@@ -2,9 +2,21 @@ version: '3'
 
 services:
   mongodb:
-    build: .
-    container_name: smb_mount_test
+    image: mongo:latest
+    build:
+        context: .
+        dockerfile: ./compose/local/mongodb/Dockerfile
+    container_name: mongodb
     cap_add:
       - SYS_ADMIN
       - DAC_READ_SEARCH
     privileged: True
+    # env_file:
+    #  - ./envs/local/mongodb
+    # command: --dbpath /mnt/db
+    expose:
+      - 21017
+#      MONGO_INITDB_ROOT_USERNAME: admin
+#      MONGO_INITDB_ROOT_PASSWORD: admin
+#      MONGO_DATA_DIR: /mnt/db
+#      MONGO_LOG_DIR: /dev/null
