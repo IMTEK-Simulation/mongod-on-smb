@@ -62,11 +62,70 @@ Note: Bringing up the db on an smb share might take time. The
 connect to the `mongod`service.
 
 Look at the database at `https://localhost:8081` or try to connect to the database
-(i.e. from within the mongo container) with
+from within the mongo container with
 
     mongo --tls --tlsCAFile /run/secrets/tls_CA.pem --tlsCertificateKeyFile \
         /run/secrets/tls_key_and_cert.pem --host mongodb
 
+or from the host system
+
+     mongo --tls --tlsCAFile keys/rootCA.pem \
+        --tlsCertificateKeyFile keys/mongodb.pem --sslAllowInvalidHostnames
+
+if the FQDN in the server's certificate has been set to the service's name 
+'mongodb'.
+
+## Processes
+
+Process tree of mongodb service:
+
+```console
+$ pstree -alt
+root@25105db69b6c:/# pstree -alt  
+docker-init -- downstream-docker-entrypoint.sh --config /etc/mongod.conf
+  `-bash /usr/local/bin/downstream-docker-entrypoint.sh --config /etc/mongod.conf
+      |-mongod --config /etc/mongod.conf --auth --bind_ip_all
+      |   |-{Backgro.kSource}
+      |   |-{Collect.xecutor}
+      |   |-{DeadlineMonitor}
+      |   |-{FlowCon.fresher}
+      |   |-{FreeMon.ocessor}
+      |   |-{FreeMonHTTP-0}
+      |   |-{FreeMonNet}
+      |   |-{Logical.Refresh}
+      |   |-{Logical.cheReap}
+      |   |-{Periodi.kRunner}
+      |   |-{TTLMonitor}
+      |   |-{Timesta.Monitor}
+      |   |-{WTCheck.tThread}
+      |   |-{WTIdleS.Sweeper}
+      |   |-{WTJourn.Flusher}
+      |   |-{clientcursormon}
+      |   |-{conn1}
+      |   |-{conn2}
+      |   |-{ftdc}
+      |   |-{listener}
+      |   |-9*[{mongod}]
+      |   |-{signalP.gThread}
+      |   |-{startPe.actions}
+      |   |-{startPe.ressure}
+      |   `-{waitForMajority}
+      `-tail -f /dev/null
+```
+
+Process tree of mongo-express:
+
+```console
+tini -- npm start
+  `-npm                          
+      |-sh -c cross-env NODE_ENV=production node app
+      |   `-node /app/node_modules/.bin/cross-env NODE_ENV=production node app
+      |       |-node app
+      |       |   `-9*[{node}]
+      |       `-5*[{node}]
+      |-5*[{node}]
+      `-4*[{npm}]
+```
 
 ## Debugging
 

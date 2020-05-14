@@ -3,6 +3,7 @@ version: '3.8'
 services:
   mongodb:
     image: local_mongo
+    init: true
     restart: always
     build:
         context: ./compose/local/mongodb
@@ -13,8 +14,8 @@ services:
       - SYS_ADMIN
       - DAC_READ_SEARCH
     privileged: True
-    expose:
-      - 21017
+    ports:
+      - "27017:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME_FILE: /run/secrets/mongo_root_username
       MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/mongo_root_password
@@ -30,7 +31,7 @@ services:
     image: mongo-express:latest
     restart: always
     ports:
-      - 8081:8081
+      - "127.0.0.1:8081:8081"
     depends_on:
       - mongodb
     environment:
