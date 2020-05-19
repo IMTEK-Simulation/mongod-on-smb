@@ -1,8 +1,9 @@
 FROM mongo:latest
-RUN apt-get --yes update && apt-get --yes install cifs-utils && rm -rf /var/lib/apt/lists/*
+RUN apt-get --yes update && apt-get --yes install smbnetfs && rm -rf /var/lib/apt/lists/*
 
 COPY etc/mongod.conf /etc/mongod.conf
-COPY etc/fstab /etc/fstab
+
+COPY etc/smbnetfs.conf /etc/smbnetfs.conf
 
 COPY docker-entrypoint.sh /usr/local/bin/downstream-docker-entrypoint.sh
 RUN chmod 700 /usr/local/bin/downstream-docker-entrypoint.sh

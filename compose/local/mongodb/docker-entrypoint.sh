@@ -4,7 +4,9 @@ set -Eeuox pipefail
 # https://medium.com/@gchudnov/trapping-signals-in-docker-containers-7a57fdda7d86
 
 echo "Mount /data/db."
-mount /data/db
+smbnetfs /data/db -o config=/etc/smbnetfs.conf \
+    -o uid=$(id -u mongodb) -i gid=$(id -g mongodb) \
+    -o umask=0077
 
 pid=0
 
@@ -17,7 +19,7 @@ term_handler() {
 
   #Cleanup
   echo "Unmount /data/db."
-  umount /data/db
+  fusermount -u /data/db
 
   exit 143; # 128 + 15 -- SIGTERM
 }
