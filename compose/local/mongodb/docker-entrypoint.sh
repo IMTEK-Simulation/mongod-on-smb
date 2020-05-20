@@ -5,7 +5,7 @@ set -Eeuox pipefail
 
 echo "Mount /data/db."
 smbnetfs /data/db -o config=/etc/smbnetfs.conf \
-    -o uid=$(id -u mongodb) -i gid=$(id -g mongodb) \
+    -o uid=$(id -u mongodb) -o gid=$(id -g mongodb) \
     -o umask=0077
 
 pid=0

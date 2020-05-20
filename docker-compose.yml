@@ -2,102 +2,18 @@ version: '3.8'
 
 services:
   mongodb:
-    image: local_mongo
+    image: mongo-on-smb
     init: true
     restart: always
     build:
         context: ./compose/local/mongodb
         dockerfile: Dockerfile
     container_name: mongodb
-    # capabilities necessary for mounting smb share within container
     cap_add:
-      - SYS_ADMIN
-      - DAC_READ_SEARCH
-    privileged: True
-    ports:
-      - "27017:27017"
+      - CAP_SYS_ADMIN
+    # ports:
+    #  - "27017:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME_FILE: /run/secrets/mongo_root_username
       MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/mongo_root_password
-    secrets:
-      - smbcredentials
-      - mongo_root_username
-      - mongo_root_password
-      - tls_key_and_cert.pem
-      - tls_CA.pem
     command: --config /etc/mongod.conf
-
-  mongo-express:
-    image: mongo-express:latest
-    restart: always
-    ports:
-      - "127.0.0.1:8081:8081"
-    depends_on:
-      - mongodb
-    environment:
-      # mongodb connection & encyrption
-      ME_CONFIG_MONGODB_SERVER: mongodb
-      ME_CONFIG_MONGODB_SSL: "true"
-      ME_CONFIG_MONGODB_SSLVALIDATE: "false"
-      ME_CONFIG_MONGODB_SSL_CERT_FILE: /run/secrets/tls_cert.pem
-      ME_CONFIG_MONGODB_SSL_KEY_FILE: /run/secrets/tls_key.pem
-
-      ME_CONFIG_MONGODB_ADMINUSERNAME_FILE: /run/secrets/mongo_root_username
-      ME_CONFIG_MONGODB_ADMINPASSWORD_FILE: /run/secrets/mongo_root_password
-
-      # the following block for user-specific access won't work
-      # ME_CONFIG_MONGODB_ENABLE_ADMIN: "false"
-      # ME_CONFIG_MONGODB_AUTH_DATABASE: admin
-      # ME_CONFIG_MONGODB_AUTH_USERNAME_FILE: /run/secrets/mongo_root_username
-      # ME_CONFIG_MONGODB_AUTH_PASSWORD_FILE: /run/secrets/mongo_root_password
-        
-      # web gui authetication 
-      ME_CONFIG_BASICAUTH_USERNAME_FILE: /run/secrets/mongo_express_username
-      ME_CONFIG_BASICAUTH_PASSWORD_FILE: /run/secrets/mongo_express_password 
-
-      # web gui encryption
-      ME_CONFIG_SITE_SSL_ENABLED: "true"
-      ME_CONFIG_SITE_SSL_KEY_PATH: /run/secrets/mongo_express_tls_key.pem
-      ME_CONFIG_SITE_SSL_CRT_PATH: /run/secrets/mongo_express_tls_cert.pem
-    secrets:
-      # mongodb credentials & encryption
-      - mongo_root_username
-      - mongo_root_password
-      - tls_key.pem
-      - tls_cert.pem
-      # web gui credentials & encryption
-      - mongo_express_username
-      - mongo_express_password
-      - mongo_express_tls_key.pem
-      - mongo_express_tls_cert.pem
-
-secrets:
-  # samba share credentials
-  smbcredentials: 
-    file: ./secrets/smbcredentials
-  
-  # mongodb admin credentials
-  mongo_root_username: 
-    file: ./secrets/mongo_root_username
-  mongo_root_password: 
-    file: ./secrets/mongo_root_password  
-  
-  # mongodb transport encryption
-  tls_key.pem:
-    file: ./keys/mongodb.key
-  tls_cert.pem:
-    file: ./keys/mongodb.crt
-  tls_key_and_cert.pem: 
-    file: ./keys/mongodb.pem
-  tls_CA.pem: 
-    file: ./keys/rootCA.pem
-
-  # mongo-express web gui credentials & encryption
-  mongo_express_username: 
-    file: ./secrets/mongo_express_username
-  mongo_express_password: 
-    file: ./secrets/mongo_express_password  
-  mongo_express_tls_key.pem: 
-    file: ./keys/mongodb.key
-  mongo_express_tls_cert.pem:
-    file: ./keys/mongodb.crt
