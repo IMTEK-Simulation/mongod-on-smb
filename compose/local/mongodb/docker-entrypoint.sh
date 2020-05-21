@@ -88,10 +88,10 @@ mount
 # provided at runtime, i.e. via an appropriate entry within
 # the evoking user's $HOME/.config/containers/mounts.conf.
 # Set correct rights for secrets:
-chown mongodb:mongodb /run/secrets/mongo_root_password
-chown mongodb:mongodb /run/secrets/mongo_root_username
-chown mongodb:mongodb /run/secrets/tls_key_and_cert.pem
-chown mongodb:mongodb /run/secrets/tls_CA.pem
+chown mongodb:mongodb /run/secrets/mongodb/password
+chown mongodb:mongodb /run/secrets/mongodb/username
+chown mongodb:mongodb /run/secrets/mognodb/tls_key_and_cert.pem
+chown mongodb:mongodb /run/secrets/rootCA.pem
 
 echo ""
 echo "Process upstream entrypoint."
