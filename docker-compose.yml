@@ -11,8 +11,10 @@ services:
     container_name: mongodb
     cap_add:
       - CAP_SYS_ADMIN
-    # ports:
-    #  - "27017:27017"
+    devices:
+      - /dev/fuse
+    ports:
+      - "27017:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME_FILE: /run/secrets/mongo_root_username
       MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/mongo_root_password
