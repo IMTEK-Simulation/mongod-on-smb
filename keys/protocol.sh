@@ -15,8 +15,8 @@ openssl req -new -key mongodb/tls_key.pem -out mongodb/tls_cert.csr -subj "$mong
 openssl x509 -req -in mongodb/tls_cert.csr -CA rootCA.pem -CAkey rootCA.key -CAcreateserial -out mongodb/tls_cert.pem -days 500 -sha256
 cat mongodb/tls_key.pem mongodb/tls_cert.pem > mongodb/tls_key_cert.pem
 
-mkdir -p mongo-express
-openssl genrsa -out mongo-express/tls_key.pem 2048
-openssl req -new -key mongo-express/tls_key.pem -out mongo-express/tls_cert.csr -subj "$mongo_express_serv_subj"
-openssl x509 -req -in mongo-express/tls_cert.csr -CA rootCA.pem -CAkey rootCA.key -CAcreateserial -out mongo-express/tls_cert.pem -days 500 -sha256
-cat mongo-express/tls_key.pem mongo-express/tls_cert.pem > mongo-express/tls_key_cert.pem
+mkdir -p mongo_express
+openssl genrsa -out mongo_express/tls_key.pem 2048
+openssl req -new -key mongo_express/tls_key.pem -out mongo_express/tls_cert.csr -subj "$mongo_express_serv_subj"
+openssl x509 -req -in mongo_express/tls_cert.csr -CA rootCA.pem -CAkey rootCA.key -CAcreateserial -out mongo_express/tls_cert.pem -days 500 -sha256
+cat mongo_express/tls_key.pem mongo_express/tls_cert.pem > mongo_express/tls_key_cert.pem

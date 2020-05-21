@@ -196,9 +196,9 @@ For this composition, the following secrets must be available:
   - `/run/secrets/smbnetfs-smbshare-mountpoint`, mongo-on-smb,
   - `/run/secrets/smbnetfs.auth`, mongo-on-smb, 
 - mongod credentials & certificates
+  - `/run/secrets/tls_CA.pem`, mongo-on-smb
   - `/run/secrets/mongodb/username`, mongo-on-smb, mongo-express
   - `/run/secrets/mongodb/password`, mongo-on-smb, mongo-express
-  - `/run/secrets/tls_CA.pem`, mongo-on-smb
   - `/run/secrets/mongodb/tls_key_and_cert.pem`, mongo-on-smb
   - `/run/secrets/mongodb/tls_cert.pem`, mongo-express
   - `/run/secrets/mongodb/tls_key.pem`, mongo-express
@@ -305,4 +305,3 @@ The `__posix_open_file` operation fails at https://github.com/wiredtiger/wiredti
 ```
 
 Likely, gvfs does not support `direct_io`.
-
