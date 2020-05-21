@@ -190,6 +190,24 @@ that will make the content of `/home/user/containers/secrets` on the host availa
 the container will be `root:root` and file permissions will correspond to permissions 
 on the host file system. Thus, an entrypoint script might have to adapt permissions.
 
+For this composition, the following secrets must be available:
+
+- smb share credentials
+  - `/run/secrets/smbnetfs-smbshare-mountpoint`, mongo-on-smb,
+  - `/run/secrets/smbnetfs.auth`, mongo-on-smb, 
+- mongod credentials & certificates
+  - `/run/secrets/mongodb/username`, mongo-on-smb, mongo-express
+  - `/run/secrets/mongodb/password`, mongo-on-smb, mongo-express
+  - `/run/secrets/tls_CA.pem`, mongo-on-smb
+  - `/run/secrets/mongodb/tls_key_and_cert.pem`, mongo-on-smb
+  - `/run/secrets/mongodb/tls_cert.pem`, mongo-express
+  - `/run/secrets/mongodb/tls_key.pem`, mongo-express
+- mongo-express web gui credentials & certificates
+  - `/run/secrets/mongo_express/username`
+  - `/run/secrets/mongo_express/password`
+  - `/run/secrets/mongo_express/tls_key.pem`
+  - `/run/secrets/mongo_express/tls_cert.pem`
+
 ### podman-compose
 
 As of 2020/05/20, `podman-compose` v 0.1.5 published on PyPi does not support the `devices`
