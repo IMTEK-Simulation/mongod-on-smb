@@ -67,7 +67,7 @@ Look at the database at `https://localhost:8081` or try to connect to the databa
 from within the mongo container with
 
     mongo --tls --tlsCAFile /run/secrets/tls_CA.pem --tlsCertificateKeyFile \
-        /run/secrets/tls_key_and_cert.pem --host mongodb
+        /run/secrets/mongodb/tls_key_cert.pem --host mongodb
 
 or from the host system
 
@@ -199,7 +199,7 @@ For this composition, the following secrets must be available:
   - `/run/secrets/tls_CA.pem`, mongo-on-smb
   - `/run/secrets/mongodb/username`, mongo-on-smb, mongo-express
   - `/run/secrets/mongodb/password`, mongo-on-smb, mongo-express
-  - `/run/secrets/mongodb/tls_key_and_cert.pem`, mongo-on-smb
+  - `/run/secrets/mongodb/tls_key_cert.pem`, mongo-on-smb
   - `/run/secrets/mongodb/tls_cert.pem`, mongo-express
   - `/run/secrets/mongodb/tls_key.pem`, mongo-express
 - mongo-express web gui credentials & certificates
