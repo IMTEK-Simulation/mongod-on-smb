@@ -90,7 +90,7 @@ mount
 # Set correct rights for secrets:
 chown mongodb:mongodb /run/secrets/mongodb/password
 chown mongodb:mongodb /run/secrets/mongodb/username
-chown mongodb:mongodb /run/secrets/mognodb/tls_key_and_cert.pem
+chown mongodb:mongodb /run/secrets/mongodb/tls_key_cert.pem
 chown mongodb:mongodb /run/secrets/rootCA.pem
 
 echo ""
