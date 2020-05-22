@@ -196,6 +196,12 @@ end it, i.e. with `kill 41`, to release all database files, and purge the databa
 
 ## Issues
 
+### Podman-related
+
+Conatiners will usually end with an error like this when shut down:
+
+    ERRO[0243] unable to close namespace: "close /proc/29519/ns/user: bad file descriptor" 
+
 ### MongoDB warnings
 
 mongod warns about

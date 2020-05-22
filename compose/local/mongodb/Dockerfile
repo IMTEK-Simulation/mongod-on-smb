@@ -17,5 +17,5 @@ COPY etc/mongod.conf /etc/mongod.conf
 COPY docker-entrypoint.sh /usr/local/bin/downstream-docker-entrypoint.sh
 RUN chmod 700 /usr/local/bin/downstream-docker-entrypoint.sh
 
-ENTRYPOINT ["/tini", "--"]
-CMD ["downstream-docker-entrypoint.sh", "mongod"]
+ENTRYPOINT ["/tini", "--", "downstream-docker-entrypoint.sh"]
+CMD ["mongod"]

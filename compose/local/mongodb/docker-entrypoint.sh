@@ -104,32 +104,31 @@ pid=0
 
 # SIGTERM-handler
 term_handler() {
+  #Cleanup
   if [ $pid -ne 0 ]; then
     kill -SIGTERM "$pid"
     wait "$pid"
   fi
-
-  #Cleanup
   echo "Unmount smb share gracefully."
   fusermount -u /data/db
   fusermount -u /mnt/smb
-
   exit 143; # 128 + 15 -- SIGTERM
 }
 
 # setup handlers
-# on callback, kill the last background process, which is `tail -f /dev/null` and execute the specified handler
-trap 'kill ${!}; term_handler' SIGTERM
+# on callback, execute the specified handler
+trap 'term_handler' SIGTERM
 
 # run application
 docker-entrypoint.sh "${@}" &
 pid="$!"
-
-# wait forever
-while true
-do
-  tail -f /dev/null & wait ${!}
-done
+wait "$pid"
+ret="$?"
+echo "docker-entrypoint ${@} ended with return code ${ret}".
+echo "Unmount smb share gracefully."
+fusermount -u /data/db
+fusermount -u /mnt/smb
+exit "${ret}"
 
 # http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_12_02.html
 # When Bash receives a signal for which a trap has been set while waiting for a
