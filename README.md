@@ -211,11 +211,30 @@ For this composition, the following secrets must be available:
 ### podman-compose
 
 As of 2020/05/20, `podman-compose` v 0.1.5 published on PyPi does not support the `devices`
-option. The current development version of `podman-compose` implements it, but is broken at
+and `restart`options. The current development version of `podman-compose` implements `devices`, 
+but is broken at
 https://github.com/containers/podman-compose/blob/64ed5545437c1348b65b5f9a4298c2212d3d6419/podman_compose.py#L1079
 
-Simple fix  https://github.com/jotelha/podman-compose/tree/20200520_no_args_build_arg 
-provides working podman-compose for our setup.
+https://github.com/containers/podman-compose/pull/180 implements `restart` and fixes broken code.
+
+### Wipe database
+
+Enter a running `mongodb` container instance, i.e. with
+
+    podman exec -it mongodb bash
+
+find `mongod`'s pid, i.e. with 
+
+```console
+$
+...
+mongodb     41  0.3  1.4 1580536 112584 ?      SLl  13:06   0:06 mongod --config /etc/mongod.conf --auth --bind_ip_all
+...
+```
+end it, i.e. with `kill 41`, to release all database files, and purge the database directory with
+
+    rm -rf /data/db/*
+
 
 ## References
 
