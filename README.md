@@ -25,6 +25,12 @@ by a pure userland approach. The described setup is based on the FUSE
 drivers `smbnetfs` and `bindfs`. See `compose/local/mongodb/docker-entrypoint.sh` 
 for more information.
 
+### Init
+
+Building images with buildah / podman won't directly pull from remote URLs in Dockerfile.
+Before building, manually download `tini` and `tini.asc` to subdir `compose/local/mongodb`
+by running bash script `get_tini.sh` from within that directory.
+
 ### Capabilities
 
 Granted capabilities are prefixed by `CAP_`, i.e.
