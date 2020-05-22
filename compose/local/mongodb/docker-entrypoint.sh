@@ -72,7 +72,7 @@ umount /data/db
 # ownership and permission  options as for the underlying smb mount
 chown mongodb:mongodb /data/db
 echo "Bind '/data/db' -> '$(cat /run/secrets/smbnetfs-smbshare-mountpoint)'"
-bindfs --enable-lock-forwarding --multithreaded \
+bindfs \
     -o uid=$(id -u mongodb) -o gid=$(id -g mongodb) \
     -o umask=0077 -o direct_io -o allow_other \
     "$(cat /run/secrets/smbnetfs-smbshare-mountpoint)" /data/db
