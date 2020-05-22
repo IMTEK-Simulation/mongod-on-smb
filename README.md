@@ -17,145 +17,13 @@ modified Docker image suggested at
 
 Tested with mongo 4.2.6 and modified mongo-express 0.54.0.
 
-## Setup with Docker
-
-### Contents
-
-Repository must not include sensitive data. Replace all dummy keys and
-passwords before deplying. Generate self-signed testing certificates below
-subfolder `keys` with
-
-```bash
-openssl genrsa -out rootCA.key 2048
-openssl req -x509 -new -nodes -key rootCA.key -sha256 -days 1024 -out rootCA.pem
-openssl genrsa -out mongodb.key 2048
-openssl req -new -key mongodb.key -out mongodb.csr
-openssl x509 -req -in mongodb.csr -CA rootCA.pem -CAkey rootCA.key -CAcreateserial -out mongodb.crt -days 500 -sha256
-cat mongodb.key mongodb.crt > mongodb.pem 
-```
-
-Create subfolder `secrets` if not present, place files
-
-    smbcredentials
-    mongo_root_password
-    mongo_root_username
-    mongo_express_password
-    mongo_express_username
-
-within `./secrets` and fill with according values. `smbcredentials`
-must have structure 
-
-    username=USER
-    password=PASS
-    domain=DOMAIN
-
-where `DOMAIN` is oftentimes `WORKGROUP` or `PUBLIC` and adapt
-content of `./etc/fstab` to point to desired samba share.
-
-The raw database must reside directly within the share or share's
-subfolder specified within `./etc/fstab`. If directory is empty,
-then db will be created with default administrator name and password
-as in the docker secrets above. Finally, build and run with
-
-    docker-compose up
-
-Note: Bringing up the db on an smb share might take time. The
-`mongo-express` service will fail several times before succeeding to
-connect to the `mongod`service.
-
-Look at the database at `https://localhost:8081` or try to connect to the database
-from within the mongo container with
-
-    mongo --tls --tlsCAFile /run/secrets/rootCA.pem --tlsCertificateKeyFile \
-        /run/secrets/mongodb/tls_key_cert.pem --host mongodb
-
-or from the host system
-
-     mongo --tls --tlsCAFile keys/rootCA.pem \
-        --tlsCertificateKeyFile keys/mongodb.pem --sslAllowInvalidHostnames
-
-if the FQDN in the server's certificate has been set to the service's name 
-'mongodb'.
-
-### Processes
-
-Process tree of mongodb service:
-
-```console
-$ pstree -alt
-root@25105db69b6c:/# pstree -alt  
-docker-init -- downstream-docker-entrypoint.sh --config /etc/mongod.conf
-  `-bash /usr/local/bin/downstream-docker-entrypoint.sh --config /etc/mongod.conf
-      |-mongod --config /etc/mongod.conf --auth --bind_ip_all
-      |   |-{Backgro.kSource}
-      |   |-{Collect.xecutor}
-      |   |-{DeadlineMonitor}
-      |   |-{FlowCon.fresher}
-      |   |-{FreeMon.ocessor}
-      |   |-{FreeMonHTTP-0}
-      |   |-{FreeMonNet}
-      |   |-{Logical.Refresh}
-      |   |-{Logical.cheReap}
-      |   |-{Periodi.kRunner}
-      |   |-{TTLMonitor}
-      |   |-{Timesta.Monitor}
-      |   |-{WTCheck.tThread}
-      |   |-{WTIdleS.Sweeper}
-      |   |-{WTJourn.Flusher}
-      |   |-{clientcursormon}
-      |   |-{conn1}
-      |   |-{conn2}
-      |   |-{ftdc}
-      |   |-{listener}
-      |   |-9*[{mongod}]
-      |   |-{signalP.gThread}
-      |   |-{startPe.actions}
-      |   |-{startPe.ressure}
-      |   `-{waitForMajority}
-      `-tail -f /dev/null
-```
-
-Process tree of mongo-express:
-
-```console
-tini -- npm start
-  `-npm                          
-      |-sh -c cross-env NODE_ENV=production node app
-      |   `-node /app/node_modules/.bin/cross-env NODE_ENV=production node app
-      |       |-node app
-      |       |   `-9*[{node}]
-      |       `-5*[{node}]
-      |-5*[{node}]
-      `-4*[{npm}]
-```
-
-### Debugging
-
-In case of connectivity issues with mongo-express, publish the port 9229 when 
-launching the according container with an interactive shell, i.e. with
-
-    docker-compose run -p 19229:9229 mongo-express bash
-
-run
-
-    npm install cross-env
-
-within and evoke the application with 
-
-    node --inspect-brk=0.0.0.0 app.js
-
-`--inspect-brk` causes a breakpoint before execution and `=0.0.0.0` allows the
-debug session to be accessed from the host. On the host, navigate to 
-`chrome://inspect` within a chromium-based browser and add `localhost:19229` 
-to the target discovery settings opened bia button 'configure'.
-The debug session should be detected automatically.
-
 ## Setup with Podman
 
-Podman runs with user privileges. The `cifs` driver for smb shares requires
+Podman runs without elevated privileges. The `cifs` driver for smb shares requires
 elevated privileges for mount operations. Thus, it must be replaced
-by a pure userland approach. The described setup bases on the FUSE
-drivers `smbnetfs` and `bindfs`.
+by a pure userland approach. The described setup is based on the FUSE
+drivers `smbnetfs` and `bindfs`. See `compose/local/mongodb/docker-entrypoint.sh` 
+for more information.
 
 ### Capabilities
 
@@ -192,21 +60,55 @@ on the host file system. Thus, an entrypoint script might have to adapt permissi
 
 For this composition, the following secrets must be available:
 
+```
+/run/secrets/smbnetfs.auth
+/run/secrets/smbnetfs-smbshare-mountpoint
+/run/secrets/mongodb/password
+/run/secrets/mongodb/username
+/run/secrets/mongodb/tls_key.pem
+/run/secrets/mongodb/tls_cert.pem
+/run/secrets/mongodb/tls_key_cert.pem
+/run/secrets/mongo_express/password
+/run/secrets/mongo_express/username
+/run/secrets/mongo_express_inwards/tls_key.pem
+/run/secrets/mongo_express_inwards/tls_cert.pem
+/run/secrets/mongo_express_inwards/tls_key_cert.pem
+/run/secrets/mongo_express_outwards/tls_key.pem
+/run/secrets/mongo_express_outwards/tls_cert.pem
+/run/secrets/mongo_express_outwards/tls_key_cert.pem
+/run/secrets/rootCA.pem
+```
+
+Use `bash generate.sh` and `bash copy.sh DEST` within this repository's
+`keys` subdirectory to generate all required `*.pem' keys and self-signed 
+certificates and place them at some desired `DEST` location for testing purpose.
+`tls_key_cert.pem` files are just concatenated `tls_key.pem` and `tls_cert.pem`
+files. `mongodb` expects them concatenated in one file, while `mongo-express`
+needs them separate. For convenience, both split and combined formats are provided 
+in all cases. The separate sets of keys an certificates fulfill the following 
+purposes:
+
+- `/run/secrets/rootCA.pem` is the certificate chain client's certificates are 
+  checked against by the `mongodb` service. 
+- `/run/secrets/mongodb/tls_key_cert.pem` are tsl key and cert used by `mongodb`
+  for any communication.
+- Keys and certificates within`/run/secrets/mongo_express_inwards` are used internally
+  by the `mongo-express` service to communicate with the `mongodb` service.
+- Keys and certificates within`/run/secrets/mongo_express_outwards` are used
+  by the `mongo-express` service to communicate with outward clients.
+
+Next to keys annd certificates, the following sensitive data must be provided
+(and are used by the specified services)
+
 - smb share credentials
-  - `/run/secrets/smbnetfs-smbshare-mountpoint`, mongo-on-smb,
-  - `/run/secrets/smbnetfs.auth`, mongo-on-smb, 
-- mongod credentials & certificates
-  - `/run/secrets/tls_CA.pem`, mongo-on-smb
-  - `/run/secrets/mongodb/username`, mongo-on-smb, mongo-express
-  - `/run/secrets/mongodb/password`, mongo-on-smb, mongo-express
-  - `/run/secrets/mongodb/tls_key_cert.pem`, mongo-on-smb
-  - `/run/secrets/mongodb/tls_cert.pem`, mongo-express
-  - `/run/secrets/mongodb/tls_key.pem`, mongo-express
-- mongo-express web gui credentials & certificates
-  - `/run/secrets/mongo_express/username`
-  - `/run/secrets/mongo_express/password`
-  - `/run/secrets/mongo_express/tls_key.pem`
-  - `/run/secrets/mongo_express/tls_cert.pem`
+  - `/run/secrets/smbnetfs-smbshare-mountpoint`: mongo-on-smb
+  - `/run/secrets/smbnetfs.auth`: mongo-on-smb
+- mongod admin credentials:
+  - `/run/secrets/mongodb/username`: mongo-on-smb, mongo-express
+  - `/run/secrets/mongodb/password`: mongo-on-smb, mongo-express
+- mongo-express web gui credentials:
+  - `/run/secrets/mongo_express/username`: mongo-express
+  - `/run/secrets/mongo_express/password`: mongo-express
 
 ### podman-compose
 
@@ -216,6 +118,26 @@ but is broken at
 https://github.com/containers/podman-compose/blob/64ed5545437c1348b65b5f9a4298c2212d3d6419/podman_compose.py#L1079
 
 https://github.com/containers/podman-compose/pull/180 implements `restart` and fixes broken code.
+
+### Debugging
+
+Note: Bringing up the db on an smb share might take time. The
+`mongo-express` service will fail several times before succeeding to
+connect to the `mongod`service.
+
+Look at the database at `https://localhost:8081` or try to connect to the database
+from within the mongo container with
+
+    mongo --tls --tlsCAFile /run/secrets/rootCA.pem --tlsCertificateKeyFile \
+        /run/secrets/mongodb/tls_key_cert.pem --host mongodb
+
+or from the host system
+
+     mongo --tls --tlsCAFile keys/rootCA.pem \
+        --tlsCertificateKeyFile keys/mongodb.pem --sslAllowInvalidHostnames
+
+if the FQDN in the server's certificate has been set to the service's name 
+'mongodb'.
 
 ### Wipe database
 
@@ -250,6 +172,7 @@ end it, i.e. with `kill 41`, to release all database files, and purge the databa
   - MongoDB, mongo-express & docker:
     - https://hub.docker.com/_/mongo
     - https://docs.mongodb.com/manual/administration/security-checklist/
+    - https://docs.mongodb.com/manual/tutorial/configure-ssl
     - https://hub.docker.com/_/mongo-express
     - https://github.com/mongo-express/mongo-express
     - https://github.com/mongo-express/mongo-express/blob/e4777b6f8bce62d204e9c4204801e2cb7a7b8898/config.default.js#L41

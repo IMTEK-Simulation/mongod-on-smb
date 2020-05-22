@@ -4,8 +4,8 @@
 temp_subj="/C=DE/ST=Some-State/L=Some-City/O=Some-Organization/OU=Some-Department/emailAddress=none@none.com"
 root_subj="$temp_subj"
 
-subj_suffix_arr=( "/CN=mongodb" "/CN=mongo-express" "/CN=mongo-express" "/CN=simdata.vm.uni-freiburg.de" )
-subdir_arr=( "mongodb" "mongo_express_inwards" "mongo_express_outwards" "global" )
+subj_suffix_arr=( "/CN=mongodb" "/CN=mongo-express" "/CN=mongo-express" )
+subdir_arr=( "mongodb" "mongo_express_inwards" "mongo_express_outwards" )
 
 # generate and self-sign root certificate
 openssl genrsa -out rootCA.key 2048
