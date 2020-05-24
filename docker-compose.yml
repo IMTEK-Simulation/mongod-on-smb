@@ -3,7 +3,6 @@ version: '3.8'
 services:
   mongodb:
     image: mongod-on-smb
-    init: true
     restart: always
     build:
         context: ./compose/local/mongodb
