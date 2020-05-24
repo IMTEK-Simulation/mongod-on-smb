@@ -34,7 +34,7 @@ set -Eeuox pipefail
 
 echo "Running entrypoint as $(whoami), uid=$(id -u), gid=$(id -g)."
 
-mkdir /mnt/smb
+mkdir -p /mnt/smb
 chown mongodb:mongodb /mnt/smb
 
 # smbnetfs looks for a user configuration within $HOME/.smb
