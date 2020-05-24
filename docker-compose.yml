@@ -12,43 +12,9 @@ services:
       - CAP_SYS_ADMIN
     devices:
       - /dev/fuse
-    ports:
-      - "27017:27017"
+    expose:
+      - "27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME_FILE: /run/secrets/mongodb/username
       MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/mongodb/password
     command: --config /etc/mongod.conf
-
-  mongo-express:
-    image: mongo-express:latest
-    restart: always
-    container_name: mongo-express
-    ports:
-      - "127.0.0.1:8081:8081"
-    depends_on:
-      - mongodb
-    environment:
-      # mongodb connection & encyrption
-      ME_CONFIG_MONGODB_SERVER: mongodb
-      ME_CONFIG_MONGODB_SSL: "true"
-      ME_CONFIG_MONGODB_SSLVALIDATE: "false"
-      ME_CONFIG_MONGODB_SSL_CERT_FILE: /run/secrets/mongo_express_inwards/tls_cert.pem
-      ME_CONFIG_MONGODB_SSL_KEY_FILE: /run/secrets/mongo_express_inwards/tls_key.pem
-
-      ME_CONFIG_MONGODB_ADMINUSERNAME_FILE: /run/secrets/mongodb/username
-      ME_CONFIG_MONGODB_ADMINPASSWORD_FILE: /run/secrets/mongodb/password
-
-      # the following block for user-specific access won't work
-      # ME_CONFIG_MONGODB_ENABLE_ADMIN: "false"
-      # ME_CONFIG_MONGODB_AUTH_DATABASE: admin
-      # ME_CONFIG_MONGODB_AUTH_USERNAME_FILE: /run/secrets/mongo_root_username
-      # ME_CONFIG_MONGODB_AUTH_PASSWORD_FILE: /run/secrets/mongo_root_password
-        
-      # web gui authetication 
-      ME_CONFIG_BASICAUTH_USERNAME_FILE: /run/secrets/mongo_express/username
-      ME_CONFIG_BASICAUTH_PASSWORD_FILE: /run/secrets/mongo_express/password 
-
-      # web gui encryption
-      ME_CONFIG_SITE_SSL_ENABLED: "true"
-      ME_CONFIG_SITE_SSL_KEY_PATH: /run/secrets/mongo_express_outwards/tls_key.pem
-      ME_CONFIG_SITE_SSL_CRT_PATH: /run/secrets/mongo_express_outwards/tls_cert.pem
