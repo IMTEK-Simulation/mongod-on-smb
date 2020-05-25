@@ -74,11 +74,11 @@ term_handler() {
 trap 'term_handler' SIGTERM
 
 # run application
-docker-entrypoint.sh "${@}" &
+docker-entrypoint-upstream.sh "${@}" &
 pid="$!"
 wait "$pid"
 ret="$?"
-echo "docker-entrypoint ${@} ended with return code ${ret}".
+echo "docker-entrypoint-upstream.sh ${@} ended with return code ${ret}".
 exit "${ret}"
 
 # http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_12_02.html

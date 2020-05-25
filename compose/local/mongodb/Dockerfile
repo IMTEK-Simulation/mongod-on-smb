@@ -16,8 +16,11 @@ RUN    curl -L -o /tini https://github.com/krallin/tini/releases/download/${TINI
 
 COPY etc/mongod.conf /etc/mongod.conf
 
-COPY docker-entrypoint.sh /usr/local/bin/downstream-docker-entrypoint.sh
-RUN chmod 700 /usr/local/bin/downstream-docker-entrypoint.sh
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod 700 /usr/local/bin/docker-entrypoint.sh
 
-ENTRYPOINT ["/tini", "--", "downstream-docker-entrypoint.sh"]
+COPY docker-entrypoint-upstream.sh /usr/local/bin/docker-entrypoint-upstream.sh
+RUN chmod 700 /usr/local/bin/docker-entrypoint-upstream.sh
+
+ENTRYPOINT ["/tini", "--", "docker-entrypoint.sh"]
 CMD ["mongod"]
