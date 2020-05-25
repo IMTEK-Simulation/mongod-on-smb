@@ -8,16 +8,16 @@ services:
         context: ./compose/local/mongodb
         dockerfile: Dockerfile
     container_name: mongodb
-    cap_add:
-      - CAP_SYS_ADMIN
-    devices:
-      - /dev/fuse
     ports:
       - "27017:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME_FILE: /run/secrets/mongodb/username
       MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/mongodb/password
     command: --config /etc/mongod.conf
+    volumes:
+     - type: bind
+       source: /mnt/db
+       target: /data/db
 
   mongo-express:
     image: mongo-express:latest
