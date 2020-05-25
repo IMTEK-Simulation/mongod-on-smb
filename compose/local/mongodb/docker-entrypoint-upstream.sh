@@ -191,10 +191,10 @@ if [ "$originalArgOne" = 'mongod' ]; then
     elif [ "$MONGO_INITDB_ROOT_USERNAME" ] || [ "$MONGO_INITDB_ROOT_PASSWORD" ]; then
         cat >&2 <<-'EOF'
 
-            error: missing 'MONGO_INITDB_ROOT_USERNAME' or 'MONGO_INITDB_ROOT_PASSWORD'
-                   both must be specified for a user to be created
+		    error: missing 'MONGO_INITDB_ROOT_USERNAME' or 'MONGO_INITDB_ROOT_PASSWORD'
+		           both must be specified for a user to be created
 
-        EOF
+		EOF
         exit 1
     fi
 
@@ -309,7 +309,7 @@ if [ "$originalArgOne" = 'mongod' ]; then
                     pwd: $(_js_escape "$MONGO_INITDB_ROOT_PASSWORD"),
                     roles: [ { role: 'root', db: $(_js_escape "$rootAuthDatabase") } ]
                 })
-            EOJS
+			EOJS
         fi
 
         export MONGO_INITDB_DATABASE="${MONGO_INITDB_DATABASE:-test}"
