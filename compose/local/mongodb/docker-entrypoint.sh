@@ -44,8 +44,7 @@ ls -lha /data/db
 echo ""
 echo "Process upstream entrypoint."
 
-# Trapping of SIGTERM for clean unmounting of smb share
-# afte mongod shutdown following
+# Trapping of SIGTERM for clean shutdown
 # https://medium.com/@gchudnov/trapping-signals-in-docker-containers-7a57fdda7d86
 pid=0
 
@@ -56,7 +55,7 @@ term_handler() {
     kill -SIGTERM "$pid"
     wait "$pid"
   fi
-  echo "Unmount smb share gracefully."
+  echo "Shut down gracefully."
   exit 143; # 128 + 15 -- SIGTERM
 }
 
