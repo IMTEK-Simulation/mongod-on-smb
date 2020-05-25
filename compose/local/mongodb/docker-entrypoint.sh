@@ -34,62 +34,9 @@ set -Eeuox pipefail
 
 echo "Running entrypoint as $(whoami), uid=$(id -u), gid=$(id -g)."
 
-mkdir -p /mnt/smb
-chown mongodb:mongodb /mnt/smb
-
-# smbnetfs looks for a user configuration within $HOME/.smb
-# and will display a warning if not found.
-# Instead, we specify /etc/smbnetfs.conf. Within that file,
-# smbnetfs looks for information on how to authenticate for specific
-# shares. The option smb_query_browser=false disables automized
-# scanning of the local SMB network.
-# This entrypoint script runs as root:root. To make the mounted
-# share available to user 'mongodb', we specify explicitly
-# uid, gid and 'allow_other'.
-# NOTE: 'direct_io' possibly obsolete, not teste without.
-echo "Mount /mnt/smb."
-smbnetfs /mnt/smb -o config=/etc/smbnetfs.conf \
-    -o smbnetfs_debug=10 -o log_file=/var/log/smbnetfs.log \
-    -o smb_debug_level=10 -o smb_query_browsers=false \
-    -o uid=$(id -u mongodb) -o gid=$(id -g mongodb) \
-    -o umask=0077 -o direct_io -o allow_other
-
-# smbnetfs makes all smb shares available in a POSIX-standard manner
-# within a single mount point. With the above configuration,
-# a share 'smb://fqdn.of.smb.host/share' or '\\fqdn.of.smb.host\share' will be
-# accessible via '/mnt/smb/fqdn.of.smb.host/share'. Any sub-folders within the
-# share are postpended.
-echo "Content at '$(cat /run/secrets/smbnetfs-smbshare-mountpoint)':"
-ls -lha "$(cat /run/secrets/smbnetfs-smbshare-mountpoint)"
-echo ""
-
-# /data/db designated as persistant volume in parent image, unmount...
-umount /data/db
-
-# ... and replace with smb share using bindfs.
-# NOTE: ownership changes here might not be necessary, just in case.
-# NOTE: might not be necessary, but just in case we apply the same
-# ownership and permission  options as for the underlying smb mount
-chown mongodb:mongodb /data/db
-echo "Bind '/data/db' -> '$(cat /run/secrets/smbnetfs-smbshare-mountpoint)'"
-bindfs \
-    -o uid=$(id -u mongodb) -o gid=$(id -g mongodb) \
-    -o umask=0077 -o direct_io -o allow_other \
-    "$(cat /run/secrets/smbnetfs-smbshare-mountpoint)" /data/db
-
-echo ""
-echo "Content at '/data/db':"
-ls -lha /data/db
-echo ""
-echo "Current mounts:"
-mount
-
-# The following files are not part of this image. We expect them to be
-# provided at runtime, i.e. via an appropriate entry within
-# the evoking user's $HOME/.config/containers/mounts.conf.
-# Set correct rights for secrets:
-chown mongodb:mongodb /run/secrets/mongodb/password
-chown mongodb:mongodb /run/secrets/mongodb/username
+# echo ""
+# echo "Content at '/data/db':"
+# ls -lha /data/db
 
 echo ""
 echo "Process upstream entrypoint."
@@ -108,8 +55,6 @@ term_handler() {
     wait "$pid"
   fi
   echo "Unmount smb share gracefully."
-  fusermount -u /data/db
-  fusermount -u /mnt/smb
   exit 143; # 128 + 15 -- SIGTERM
 }
 
@@ -123,9 +68,6 @@ pid="$!"
 wait "$pid"
 ret="$?"
 echo "docker-entrypoint ${@} ended with return code ${ret}".
-echo "Unmount smb share gracefully."
-fusermount -u /data/db
-fusermount -u /mnt/smb
 exit "${ret}"
 
 # http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_12_02.html
