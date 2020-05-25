@@ -35,23 +35,14 @@ set -Eeuox pipefail
 echo "Running entrypoint as $(whoami), uid=$(id -u), gid=$(id -g)."
 
 echo ""
+echo "Current mounts:"
+mount
+echo ""
 echo "Content at '/data/db':"
 ls -lha /data/db
-echo ""
-echo "Current mounts:"
-
-# The following files are not part of this image. We expect them to be
-# provided at runtime, i.e. via an appropriate entry within
-# the evoking user's $HOME/.config/containers/mounts.conf.
-# Set correct rights for secrets:
-chown mongodb:mongodb /run/secrets/mongodb/password
-chown mongodb:mongodb /run/secrets/mongodb/username
-chown mongodb:mongodb /run/secrets/mongodb/tls_key_cert.pem
-chown mongodb:mongodb /run/secrets/rootCA.pem
 
 echo ""
 echo "Process upstream entrypoint."
-
 
 # Trapping of SIGTERM for clean unmounting of smb share
 # afte mongod shutdown following
