@@ -36,7 +36,7 @@ echo "Running entrypoint as $(whoami), uid=$(id -u), gid=$(id -g)."
 
 echo ""
 echo "Content at '/data/db':"
-su -c 'ls -lha /data/db' mongodb
+ls -lha /data/db
 echo ""
 echo "Current mounts:"
 
