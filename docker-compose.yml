@@ -14,7 +14,7 @@ services:
       - /dev/fuse
     expose:
       - "27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME_FILE: /run/secrets/mongodb/username
-      MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/mongodb/password
+    # environment:
+    #  MONGO_INITDB_ROOT_USERNAME_FILE: /run/secrets/mongodb/username
+    #  MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/mongodb/password
     command: --config /etc/mongod.conf
