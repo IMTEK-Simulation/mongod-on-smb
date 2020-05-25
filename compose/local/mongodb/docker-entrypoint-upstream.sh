@@ -1,4 +1,6 @@
 #!/bin/bash
+# upstream docker-entrypoint.sh: https://github.com/docker-library/mongo/blob/master/4.2/docker-entrypoint.sh
+# upstream license: Apache License 2.0, https://github.com/docker-library/mongo/blob/master/LICENSE
 set -Eeuo pipefail
 
 if [ "${1:0:1}" = '-' ]; then
@@ -7,20 +9,7 @@ fi
 
 originalArgOne="$1"
 
-# allow the container to be started with `--user`
-# all mongo* commands should be dropped to the correct user
-if [[ "$originalArgOne" == mongo* ]] && [ "$(id -u)" = '0' ]; then
-    if [ "$originalArgOne" = 'mongod' ]; then
-        find /data/configdb /data/db \! -user mongodb -exec chown mongodb '{}' +
-    fi
-
-    # make sure we can write to stdout and stderr as "mongodb"
-    # (for our "initdb" code later; see "--logpath" below)
-    chown --dereference mongodb "/proc/$$/fd/1" "/proc/$$/fd/2" || :
-    # ignore errors thanks to https://github.com/docker-library/mongo/issues/149
-
-    exec gosu mongodb "$BASH_SOURCE" "$@"
-fi
+# don't change any ownership, run as root within container
 
 # you should use numactl to start your mongod instances, including the config servers, mongos instances, and any clients.
 # https://docs.mongodb.com/manual/administration/production-notes/#configuring-numa-on-linux
