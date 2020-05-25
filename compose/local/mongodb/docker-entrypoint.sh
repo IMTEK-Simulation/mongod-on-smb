@@ -33,11 +33,6 @@
 set -Eeuox pipefail
 
 echo "Running entrypoint as $(whoami), uid=$(id -u), gid=$(id -g)."
-
-# echo ""
-# echo "Content at '/data/db':"
-# ls -lha /data/db
-
 echo ""
 echo "Process upstream entrypoint."
 
