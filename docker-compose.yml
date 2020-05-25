@@ -1,19 +1,21 @@
 version: '3.8'
 
 services:
-  mongodb:
-    image: mongod-on-smb
+  testing-mongodb:
+    image: testing-mongod-on-smb
     restart: always
     build:
         context: ./compose/local/mongodb
         dockerfile: Dockerfile
     container_name: mongodb
-    ports:
-      - "27017:27017"
     command: --config /etc/mongod.conf
     security_opt:
      - label=disable
     volumes:
      - type: bind
-       source: /mnt/sandboxdb
+       source: /mnt/sandboxdb/DB
        target: /data/db
+    volumes:
+     - type: bind
+       source: /mnt/backup
+       target: /data/backup
