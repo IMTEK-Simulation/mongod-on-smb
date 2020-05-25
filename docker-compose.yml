@@ -11,6 +11,8 @@ services:
     ports:
       - "27017:27017"
     command: --config /etc/mongod.conf
+    security_opt:
+     - label=disable
     volumes:
      - type: bind
        source: /mnt/sandboxdb
