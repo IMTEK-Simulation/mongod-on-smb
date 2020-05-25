@@ -2,7 +2,7 @@
 # modified upstream Dockerfile https://raw.githubusercontent.com/docker-library/mongo/master/4.2/Dockerfile
 # upstream license:  Apache License 2.0, https://github.com/docker-library/mongo/blob/master/LICENSE
 #
-FROM ubuntu:focal
+FROM ubuntu:bionic
 
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 # RUN groupadd -r mongodb && useradd -r -g mongodb mongodb
