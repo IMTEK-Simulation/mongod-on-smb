@@ -14,8 +14,6 @@ RUN    curl -L -o /tini https://github.com/krallin/tini/releases/download/${TINI
 
 # NOTE: curl and gpg are obsolete now, but not removed from image
 
-COPY etc/fuse.conf /etc/fuse.conf
-COPY etc/smbnetfs.conf /etc/smbnetfs.conf
 COPY etc/mongod.conf /etc/mongod.conf
 
 COPY docker-entrypoint.sh /usr/local/bin/downstream-docker-entrypoint.sh
