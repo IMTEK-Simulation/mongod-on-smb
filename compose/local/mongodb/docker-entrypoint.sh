@@ -36,7 +36,6 @@ echo "Running entrypoint as $(whoami), uid=$(id -u), gid=$(id -g)."
 echo ""
 echo "Process upstream entrypoint."
 
-
 # Trapping of SIGTERM for clean unmounting of smb share
 # afte mongod shutdown following
 # https://medium.com/@gchudnov/trapping-signals-in-docker-containers-7a57fdda7d86
