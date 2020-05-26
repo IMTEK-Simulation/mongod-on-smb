@@ -8,7 +8,7 @@ set -x
 temp_subj="/C=DE/ST=Baden-Wuerttemberg/L=Freiburg i. Br./O=University of Freiburg/OU=IMTEK Simulation/emailAddress=johannes.hoermann@imtek.uni-freiburg.de"
 
 subj="${temp_subj}/CN=localhost"
-subdir="$(date +%Y%m%d%H%M%)-client-cert"
+subdir="$(date +%Y%m%d%H%M)-client-cert"
 
 
 mkdir -p "${subdir}"

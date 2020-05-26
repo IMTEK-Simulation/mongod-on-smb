@@ -8,8 +8,8 @@ set -x
 temp_subj="/C=DE/ST=Baden-Wuerttemberg/L=Freiburg i. Br./O=University of Freiburg/OU=IMTEK Simulation/emailAddress=johannes.hoermann@imtek.uni-freiburg.de"
 root_subj="$temp_subj"
 
-subj_suffix_arr=( "/CN=mongodb" "/CN=mongo-express" "/CN=mongo-express" )
-subdir_arr=( "mongodb" "mongo_express_inwards" "mongo_express_outwards" )
+subj_suffix_arr=( "/CN=mongodb" "/CN=mongo-express" "/CN=mongo-express" "/CN=mongodb-backup" )
+subdir_arr=( "mongodb" "mongo_express_inwards" "mongo_express_outwards" "mongodb_backup" )
 
 PASSW=$(openssl rand -base64 32)
 echo "$PASSW" > passw
