@@ -37,16 +37,16 @@ while true; do
   esac
 done
 
-echo "Regex filter:     '${db_regex}'"
-echo "Input directory: '$(readlink -f ${indir})'"
-echo "Current content:"
-ls -lha "${indir}"
-
 source init_static_params.sh
 
+log $LOG_MESSAGE_INFO "[INFO] Regex filter:     '${db_regex}'"
+log $LOG_MESSAGE_INFO "[INFO] Input directory: '$(readlink -f ${indir})'"
+log $LOG_MESSAGE_INFO "[INFO] Current content:"
+ls -lha "${indir}"
+
 for db in $(ls -1 "${indir}" | grep "${db_regex}"); do
-    echo "Restore database '${db}'."
+    log $LOG_MESSAGE_INFO "Restore database '${db}'."
     if [ "${dry_run}" == false ]; then
-        mongorestore ${SSL_OPTS} ${AUTH_OPTS} --gzip --db "${db}" "${indir}/${db}"
+        mongorestore ${SSL_OPTS} ${AUTH_OPTS} --verbose --gzip --db "${db}" "${indir}/${db}"
     fi
 done

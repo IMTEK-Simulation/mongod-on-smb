@@ -57,12 +57,12 @@ for OPLOG in $(ls ${oplog_indir}/*.bson.gz); do
       if [ $ALREADY_APPLIED_OPLOG -eq 0 ]; then
          ALREADY_APPLIED_OPLOG=1
          echo "applying oplog $LAST_OPLOG"
-         mongorestore ${SSL_OPTS} ${AUTH_OPTS} --gzip --oplogFile $LAST_OPLOG --oplogReplay --dir /tmp/emptyDirForOpRestore --oplogLimit=$oplog_limit
+         mongorestore ${SSL_OPTS} ${AUTH_OPTS} --verbose --gzip --oplogFile $LAST_OPLOG --oplogReplay --dir /tmp/emptyDirForOpRestore --oplogLimit=${oplog_limit}
          echo "applying oplog $OPLOG"
-         mongorestore ${SSL_OPTS} ${AUTH_OPTS} --gzip --oplogFile $OPLOG --oplogReplay --dir /tmp/emptyDirForOpRestore --oplogLimit=$oplog_limit
+         mongorestore ${SSL_OPTS} ${AUTH_OPTS} --verbose --gzip --oplogFile $OPLOG --oplogReplay --dir /tmp/emptyDirForOpRestore --oplogLimit=${oplog_limit}
       else
          echo "applying oplog $OPLOG"
-         mongorestore ${SSL_OPTS} ${AUTH_OPTS} --gzip --oplogFile $OPLOG --oplogReplay --dir /tmp/emptyDirForOpRestore --oplogLimit=$oplog_limit
+         mongorestore ${SSL_OPTS} ${AUTH_OPTS} --verbose --gzip --oplogFile $OPLOG --oplogReplay --dir /tmp/emptyDirForOpRestore --oplogLimit=${oplog_limit}
       fi
    else
       LAST_OPLOG=$OPLOG
@@ -73,6 +73,6 @@ rmdir /tmp/emptyDirForOpRestore
 if [ $ALREADY_APPLIED_OPLOG -eq 0 ]; then
    if [ "$LAST_OPLOG" != "" ]; then
          echo "applying oplog $LAST_OPLOG"
-     mongorestore ${SSL_OPTS} --oplogFile $LAST_OPLOG --oplogReplay --dir ${oplog_indir} --oplogLimit=$oplog_limit
+     mongorestore ${SSL_OPTS} ${AUTH_OPTS} --verbose --oplogFile $LAST_OPLOG --oplogReplay --dir ${oplog_indir} --oplogLimit=${oplog_limit}
    fi
 fi

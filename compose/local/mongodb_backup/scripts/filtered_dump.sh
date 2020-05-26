@@ -50,6 +50,6 @@ source init_static_params.sh
 for db in $(list_dbs.py | grep "${db_regex}"); do
     echo "Dump database '${db}'."
     if [ "${dry_run}" == false ]; then
-        mongodump ${SSL_OPTS} ${AUTH_OPTS} --gzip --db "${db}" --out "${outdir}"
+        mongodump ${SSL_OPTS} ${AUTH_OPTS} --verbose --gzip --db "${db}" --out "${outdir}"
     fi
 done

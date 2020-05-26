@@ -36,8 +36,8 @@ source init_static_params.sh
 if [ "${dry_run}" == false ]; then
     mkdir -p -v "${outdir}"
 fi
-log $LOG_LEVEL_INFO "[INFO] Output directory: '$(readlink -f ${outdir})'"
-log $LOG_LEVEL_INFO "[INFO] Current content:"
+log $LOG_MESSAGE_INFO "[INFO] Output directory: '$(readlink -f ${outdir})'"
+log $LOG_MESSAGE_INFO "[INFO] Current content:"
 ls -lha "${outdir}"
 
 if [ "${dry_run}" == false ]; then
