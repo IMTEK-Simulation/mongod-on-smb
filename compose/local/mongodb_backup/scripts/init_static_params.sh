@@ -23,7 +23,7 @@ function initStaticParams
     LOG_MESSAGE_WARN=2
     LOG_MESSAGE_INFO=3
     LOG_MESSAGE_DEBUG=4
-    LOG_LEVEL=$LOG_MESSAGE_DEBUG
+    LOG_LEVEL=${LOG_MESSAGE_DEBUG}
 }
 
 function log
@@ -32,8 +32,8 @@ function log
    shift
    MESSAGE="$@"
 
-   if [ $MESSAGE_LEVEL -le $LOG_LEVEL ]; then
-      echo "`date +'%Y-%m-%dT%H:%M:%S.%3N'` $MESSAGE"
+   if [ ${MESSAGE_LEVEL} -le ${LOG_LEVEL} ]; then
+      echo "$(date +'%Y-%m-%dT%H:%M:%S.%3N') ${MESSAGE}"
    fi
 }
 

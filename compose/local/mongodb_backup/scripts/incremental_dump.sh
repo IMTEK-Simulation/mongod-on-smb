@@ -70,12 +70,12 @@ OPLOG_OUTFILE="${outdir}/${TIMESTAMP_LAST_OPLOG_ENTRY}_${INC_NUMBER_LAST_OPLOG_E
 if [ "$LAST_OPLOG_ENTRY" != "" ]; then
    OPLOG_QUERY="{ \"ts\" : { \"\$gt\" : $START_TIMESTAMP } }"
    set -o xtrace
-   mongodump ${SSL_OPTS} ${AUTH_OPTS} -c oplog.rs --query "${OPLOG_QUERY}" --db local -o - | gzip -9 > $OPLOG_OUTFILE
+   mongodump ${SSL_OPTS} ${AUTH_OPTS} --verbose --collection oplog.rs --query "${OPLOG_QUERY}" --db local -o - | gzip -9 > $OPLOG_OUTFILE
    set +o xtrace
    RET_CODE=$?
 else
    set -o xtrace
-   mongodump ${SSL_OPTS} ${AUTH_OPTS} -c oplog.rs --db local -o - | gzip -9 > $OPLOG_OUTFILE
+   mongodump ${SSL_OPTS} ${AUTH_OPTS} --verbose --collection oplog.rs --db local -o - | gzip -9 > $OPLOG_OUTFILE
    set +o xtrace
    RET_CODE=$?
 fi
