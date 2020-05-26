@@ -7,7 +7,7 @@ services:
     build:
         context: ./compose/local/mongodb
         dockerfile: Dockerfile
-    container_name: mongodb
+    container_name: testing-mongodb
     command: --config /etc/mongod.conf
     security_opt:
      - label=disable
@@ -15,7 +15,6 @@ services:
      - type: bind
        source: /mnt/sandboxdb/DB
        target: /data/db
-    volumes:
      - type: bind
        source: /mnt/backup
        target: /data/backup
