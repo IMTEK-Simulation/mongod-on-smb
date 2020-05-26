@@ -12,7 +12,7 @@ function initStaticParams
     # ... while mongoshell itself wants new tsl opts:
     TLS_OPTS="--tls --tlsCAFile /run/secrets/rootCA.pem \
         --tlsCertificateKeyFile /run/secrets/mongodb_backup/tls_key_cert.pem \
-        --sslAllowInvalidHostnames"
+        --tlsAllowInvalidHostnames"
 
     AUTH_OPTS="--host mongodb --port 27017 \
         --authenticationDatabase=$(cat /run/secrets/mongodb/username) \
