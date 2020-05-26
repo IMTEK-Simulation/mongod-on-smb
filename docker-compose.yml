@@ -21,6 +21,23 @@ services:
        source: /mnt/db
        target: /data/db
 
+  mongodb-backup:
+    image: mongodb-backup
+    restart: always
+    build:
+        context: ./compose/local/mongodb_backup
+        dockerfile: Dockerfile
+    container_name: mongodb-backup
+    command: tail -f /dev/null
+    depends_on:
+      - mongodb
+    security_opt:
+     - label=disable
+    volumes:
+     - type: bind
+       source: /mnt/backup
+       target: /data/backup
+
   mongo-express:
     image: mongo-express:latest
     restart: always
