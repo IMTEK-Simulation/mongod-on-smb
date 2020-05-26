@@ -3,7 +3,7 @@ host = 'mongodb'
 port = 27017
 ssl_ca_cert='/run/secrets/rootCA.pem'
 ssl_certfile='/run/secrets/mongodb_backup/tls_cert.pem'
-ssl_keyfile='/run/secrets/tls_key.pem'
+ssl_keyfile='/run/secrets/mongodb_backup/tls_key.pem'
 
 # get administrator credentials
 with open('/run/secrets/mongodb/username','r') as f:
@@ -21,7 +21,10 @@ client = MongoClient(host, port,
     authSource=username, # assume admin database and admin user share name
     ssl_ca_certs=ssl_ca_cert,
     ssl_certfile=ssl_certfile,
-    ssl_keyfile=ssl_keyfile)
+    ssl_keyfile=ssl_keyfile,
+    tlsAllowInvalidHostnames=True)
+# Within the container environment, mongod runs on host 'mongodb'.
+# That hostname, however, is not mentioned within the host certificate.
 
 dbs = client.list_database_names()
 for db in dbs:

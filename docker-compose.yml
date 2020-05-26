@@ -13,7 +13,8 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME_FILE: /run/secrets/mongodb/username
       MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/mongodb/password
-    command: --config /etc/mongod.conf
+    # master activates oplog, used for backup
+    command: --master --config /etc/mongod.conf
     security_opt:
      - label=disable
     volumes:
@@ -28,6 +29,7 @@ services:
         context: ./compose/local/mongodb_backup
         dockerfile: Dockerfile
     container_name: mongodb-backup
+    # for now, doing nothing
     command: tail -f /dev/null
     depends_on:
       - mongodb
