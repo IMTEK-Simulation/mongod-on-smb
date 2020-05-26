@@ -42,15 +42,11 @@ echo "Input directory: '$(readlink -f ${indir})'"
 echo "Current content:"
 ls -lha "${indir}"
 
+source init_static_params.sh
+
 for db in $(ls -1 "${indir}" | grep "${db_regex}"); do
     echo "Restore database '${db}'."
     if [ "${dry_run}" == false ]; then
-        mongorestore --ssl --sslCAFile /run/secrets/rootCA.pem \
-            --sslPEMKeyFile /run/secrets/mongodb_backup/tls_key_cert.pem \
-            --sslAllowInvalidHostnames --verbose \
-            --authenticationDatabase=$(cat /run/secrets/mongodb/username) \
-            --username=$(cat /run/secrets/mongodb/username) \
-            --password=$(cat /run/secrets/mongodb/password) \
-            --host mongodb --port=27017 --gzip --db "${db}" "${indir}/${db}"
+        mongorestore ${SSL_OPTS} ${AUTH_OPTS} --gzip --db "${db}" "${indir}/${db}"
     fi
 done

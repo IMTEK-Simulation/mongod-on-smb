@@ -12,20 +12,13 @@ RUN    apt-get update \
 
 # NOTE: curl and gpg are obsolete now
 
-COPY list_dbs.py /usr/local/bin/list_dbs.py
-RUN chmod 700 /usr/local/bin/list_dbs.py
-
-COPY full_dump.sh /usr/local/bin/full_dump.sh
-RUN chmod 700 /usr/local/bin/full_dump.sh
-
-COPY full_restore.sh /usr/local/bin/full_restore.sh
-RUN chmod 700 /usr/local/bin/full_restore.sh
-
-COPY full_restore.sh /usr/local/bin/mongoshell.sh
-RUN chmod 700 /usr/local/bin/mongoshell.sh
+COPY scripts/* /usr/local/bin/
+RUN chmod 700 /usr/local/bin/*
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod 700 /usr/local/bin/docker-entrypoint.sh
+
+COPY init_rs.js /init_rs.js
 
 ENTRYPOINT ["/tini", "--", "docker-entrypoint.sh"]
 

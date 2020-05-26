@@ -44,15 +44,12 @@ echo "Output directory: '$(readlink -f ${outdir})'"
 echo "Current content:"
 ls -lha "${outdir}"
 
+
+source init_static_params.sh
+
 for db in $(list_dbs.py | grep "${db_regex}"); do
     echo "Dump database '${db}'."
     if [ "${dry_run}" == false ]; then
-        mongodump --ssl --sslCAFile /run/secrets/rootCA.pem \
-            --sslPEMKeyFile /run/secrets/mongodb_backup/tls_key_cert.pem \
-            --sslAllowInvalidHostnames --verbose \
-            --authenticationDatabase=$(cat /run/secrets/mongodb/username) \
-            --username=$(cat /run/secrets/mongodb/username) \
-            --password=$(cat /run/secrets/mongodb/password) \
-            --host mongodb --port=27017 --gzip --db "${db}" --out "${outdir}"
+        mongodump ${SSL_OPTS} ${AUTH_OPTS} --gzip --db "${db}" --out "${outdir}"
     fi
 done
