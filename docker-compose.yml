@@ -31,8 +31,6 @@ services:
     container_name: mongodb-backup
     depends_on:
       - mongodb
-    # command: cron -f
-    command: tail -f /dev/null
     environment:
        TZ: Europe/Berlin
     security_opt:
@@ -75,4 +73,5 @@ services:
       ME_CONFIG_SITE_SSL_ENABLED: "true"
       ME_CONFIG_SITE_SSL_KEY_PATH: /run/secrets/mongo_express_outwards/tls_key.pem
       ME_CONFIG_SITE_SSL_CRT_PATH: /run/secrets/mongo_express_outwards/tls_cert.pem
+
       TZ: Europe/Berlin
