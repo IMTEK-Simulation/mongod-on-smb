@@ -29,10 +29,10 @@ services:
         context: ./compose/local/mongodb_backup
         dockerfile: Dockerfile
     container_name: mongodb-backup
-    # for now, doing nothing
-    command: tail -f /dev/null
     depends_on:
       - mongodb
+    # command: cron -f
+    command: tail -f /dev/null
     environment:
        TZ: Europe/Berlin
     security_opt:
