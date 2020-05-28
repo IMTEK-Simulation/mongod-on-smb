@@ -6,14 +6,14 @@ req_extensions = v3_req
 [req_distinguished_name]
 countryName = DE
 countryName_default = DE
-stateOrProvinceName = Baden-Wuerttemberg
-stateOrProvinceName_default = Baden-Wuerttemberg
-localityName = Freiburg i. Br.
-localityName_default = Freiburg i. Br.
-organizationalUnitName  = University of Freiburg
-organizationalUnitName_default  = University of Freiburg
+stateOrProvinceName = Some state
+stateOrProvinceName_default = Some state
+localityName = Some city
+localityName_default = Some city
+organizationalUnitName = Some organization
+organizationalUnitName_default = Some organization
 commonName = 
-commonName_max  = 64
+commonName_max = 64
 
 [ v3_req ]
 # Extensions to add to a certificate request
@@ -23,5 +23,6 @@ keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
 subjectAltName = @alt_names
 
 [alt_names]
-DNS.1 = simdata.vm.uni-freiburg.de
-IP.1 = 132.230.102.164
+DNS.1 = some.host.fqdn
+IP.1 = 127.0.0.1
+# and so on and so forth

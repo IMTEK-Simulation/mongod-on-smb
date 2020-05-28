@@ -1,6 +1,13 @@
 #!/bin/bash
+#
+# usage:
+#
+#     copy.sh DEST
+#
+# Copies all *.pem files possibly nested within the hierarchy below the
+# current working directory to the same relative hierarchy at DEST, creating
+# missing subdirectories as necessary. Avoids the use of rsync.
 set -x
-# this snippet avoids using rsync
 
 # first run generate.sh, then copy.sh DEST to move relevant files (without rootCA.key) to DEST
 DEST="${1%%/}"

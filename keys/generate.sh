@@ -1,11 +1,14 @@
 #!/bin/bash
-set -x
 # generate root certificate and derived set of self-signed certificates for testing purposes
-
+#
+# TODO:
+# * CN field apparently overridden by SAN (subject alternative names) in openssl.cnf. Fix that.
+#
 # sources:
 # - https://medium.com/@rajanmaharjan/secure-your-mongodb-connections-ssl-tls-92e2addb3c89
 # - http://apetec.com/support/GenerateSAN-CSR.htm
-temp_subj="/C=DE/ST=Baden-Wuerttemberg/L=Freiburg i. Br./O=University of Freiburg/OU=IMTEK Simulation/emailAddress=johannes.hoermann@imtek.uni-freiburg.de"
+set -x
+temp_subj="/C=DE/ST=Some state/L=Some city/O=Some organization/OU=Some department/emailAddress=none@none"
 root_subj="$temp_subj"
 
 subj_suffix_arr=( "/CN=mongodb" "/CN=mongo-express" "/CN=mongo-express" "/CN=mongodb-backup" )
