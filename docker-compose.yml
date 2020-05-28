@@ -13,6 +13,7 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME_FILE: /run/secrets/mongodb/username
       MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/mongodb/password
+      TZ: Europe/Berlin
     command: --config /etc/mongod.conf
     security_opt:
      - label=disable
@@ -28,9 +29,10 @@ services:
         context: ./compose/local/mongodb_backup
         dockerfile: Dockerfile
     container_name: mongodb-backup
-    command: tail -f /dev/null
     depends_on:
       - mongodb
+    environment:
+       TZ: Europe/Berlin
     security_opt:
      - label=disable
     volumes:
@@ -71,3 +73,5 @@ services:
       ME_CONFIG_SITE_SSL_ENABLED: "true"
       ME_CONFIG_SITE_SSL_KEY_PATH: /run/secrets/mongo_express_outwards/tls_key.pem
       ME_CONFIG_SITE_SSL_CRT_PATH: /run/secrets/mongo_express_outwards/tls_cert.pem
+
+      TZ: Europe/Berlin
