@@ -1,6 +1,8 @@
 # IMTEK Simulation MongoDB
 
-2020/05, Johannes Hoermann, johannes.hoermann@imtek.uni-freiburg.de
+Copyright 2020, IMTEK Simulation, University of Freiburg
+
+Author: Johannes Hoermann, johannes.hoermann@imtek.uni-freiburg.de
 
 ## Summary
 
