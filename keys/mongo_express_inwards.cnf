@@ -1,4 +1,5 @@
 # source: http://apetec.com/support/GenerateSAN-CSR.htm
+
 [req]
 distinguished_name = req_distinguished_name
 req_extensions = v3_req
@@ -7,13 +8,10 @@ req_extensions = v3_req
 countryName = DE
 countryName_default = DE
 stateOrProvinceName = Some state
-stateOrProvinceName_default = Some state
-localityName = Some city
-localityName_default = Some city
-organizationalUnitName = Some organization
-organizationalUnitName_default = Some organization
-commonName = 
-commonName_max = 64
+localityName = Some place
+organizationName= Some organization
+organizationalUnitName = Some department
+emailAddress = some@mail.address
 
 [ v3_req ]
 # Extensions to add to a certificate request
@@ -23,6 +21,5 @@ keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
 subjectAltName = @alt_names
 
 [alt_names]
-DNS.1 = some.host.fqdn
-IP.1 = 127.0.0.1
-# and so on and so forth
+# container composition internal service name
+DNS.1 = mongo-express
