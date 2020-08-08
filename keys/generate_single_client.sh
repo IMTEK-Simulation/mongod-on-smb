@@ -1,12 +1,14 @@
 #!/bin/bash
 set -x
 # generate client key and certificate, sign with root certificate, bundle .pem files in tar archive
+# expects $name as first argument and openssl config file $name.cnf
 
 # sources:
 # - https://medium.com/@rajanmaharjan/secure-your-mongodb-connections-ssl-tls-92e2addb3c89
 # - http://apetec.com/support/GenerateSAN-CSR.htm
-subj="/C=DE/ST=Some state/L=Some city/O=Some organization/OU=Some department/emailAddress=none@none"
-subdir="$(date +%Y%m%d%H%M)-client-cert"
+name=$1
+conf="${name}.cnf"
+subdir="$(date +%Y%m%d%H%M)-${name}-client-cert"
 
 mkdir -p "${subdir}"
 PASSW=$(openssl rand -base64 32)
@@ -15,7 +17,8 @@ echo "$PASSW" > "${subdir}/passw"
 # generate key
 openssl genrsa -out "${subdir}/tls_key.pem" 2048
 # generate certificate request
-openssl req -new -key "${subdir}/tls_key.pem" -out "${subdir}/tls_cert.csr" -subj "${subj}" -batch
+openssl req -new -key "${subdir}/tls_key.pem" -out "${subdir}/tls_cert.csr" -config "${conf}" -batch
+
 # print request to stdout
 openssl req -text -noout -in "${subdir}/tls_cert.csr"
 # generate self-signed certifictae

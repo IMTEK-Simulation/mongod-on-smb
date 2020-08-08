@@ -14,8 +14,9 @@ DEST="${1%%/}"
 # set restrictive permissions on local files
 chmod -R go-rwx .
 
+# -not -path './[0-9]*' option excludes subdirs beginning with timestamp
 # create target directory hierarchy
-find . -type f -name '*.pem' -printf "%h\n" | sort -u | sed -E 's|^\./||' | xargs -n 1 -I {} echo "${DEST}/{}" | xargs -n 1 mkdir -p
+find . -type f -not -path './[0-9]*' -name '*.pem' -printf "%h\n" | sort -u | sed -E 's|^\./||' | xargs -n 1 -I {} echo "${DEST}/{}" | xargs -n 1 mkdir -p
 # printf "%h\n" prints only the file's leading directory name
 # http://man7.org/linux/man-pages/man1/find.1.html
 # sed command removes leading curdir '.' character followed by path separator '/' from directory names
@@ -24,4 +25,4 @@ find . -type f -name '*.pem' -printf "%h\n" | sort -u | sed -E 's|^\./||' | xarg
 chmod -R go-rwx "${DEST}"
 
 # copy all *.pem key and certificate files to target hierarchy
-find . -type f -name '*.pem' | xargs -n 1 -I {} cp "{}" "${DEST}/{}"
+find . -type f -not -path './[0-9]*' -name '*.pem' | xargs -n 1 -I {} cp "{}" "${DEST}/{}"

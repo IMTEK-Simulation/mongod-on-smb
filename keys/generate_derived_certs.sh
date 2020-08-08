@@ -28,4 +28,6 @@ for ((i=0;i<${#cnf_arr[@]};++i)); do
     cat "${subdir}"/tls_key.pem "${subdir}/tls_cert.pem" > "${subdir}/tls_key_cert.pem"
     # concatenate key and signed certificate in p12 file
     openssl pkcs12 -export -in "${subdir}/tls_cert.pem" -inkey "${subdir}/tls_key_cert.pem" -out "${subdir}/tls_key_cert.p12" -password pass:$PASSW
+    # print content of generated .pem certificate to stdout
+    openssl x509 -in ${subdir}/tls_cert.pem -text
 done
