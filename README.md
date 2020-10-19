@@ -24,7 +24,7 @@ Tested with mongo 4.2.6 and modified mongo-express 0.54.0.
 Podman runs without elevated privileges. The `cifs` driver for smb shares requires
 elevated privileges for mount operations. Thus, it must be replaced
 by a pure userland approach. The described setup is based on the FUSE
-drivers `smbnetfs` and `bindfs`. See `compose/local/mongodb/docker-entrypoint.sh` 
+drivers `smbnetfs` and `bindfs`. See `compose/local/mongodb/docker-entrypoint.sh`
 for more information.
 
 ### Capabilities
@@ -50,14 +50,14 @@ container.
 ### Secrets
 
 podman does not handle `secrets` the way docker does. Similar behavior can be achieved with
-a per-user configuration file `$HOME/.config/containers/mounts.conf` on the host containing, 
+a per-user configuration file `$HOME/.config/containers/mounts.conf` on the host containing,
 for example, a line
 
     /home/user/containers/secrets:/run/secrets
 
 that will make the content of `/home/user/containers/secrets` on the host available under
-`/run/secrets` within *all containers* of the evoking user. The owner and group within 
-the container will be `root:root` and file permissions will correspond to permissions 
+`/run/secrets` within *all containers* of the evoking user. The owner and group within
+the container will be `root:root` and file permissions will correspond to permissions
 on the host file system. Thus, an entrypoint script might have to adapt permissions.
 
 For this composition, the following secrets must be available:
@@ -90,8 +90,8 @@ needs them separate. For convenience, both split and combined formats are provid
 in all cases. The separate sets of keys an certificates fulfill the following 
 purposes:
 
-- `/run/secrets/rootCA.pem` is the certificate chain client's certificates are 
-  checked against by the `mongodb` service. 
+- `/run/secrets/rootCA.pem` is the certificate chain client's certificates are
+  checked against by the `mongodb` service.
 - `/run/secrets/mongodb/tls_key_cert.pem` are tsl key and cert used by `mongodb`
   for any communication.
 - Keys and certificates within`/run/secrets/mongo_express_inwards` are used internally
@@ -115,11 +115,75 @@ Next to keys annd certificates, the following sensitive data must be provided
 ### podman-compose
 
 As of 2020/05/20, `podman-compose` v 0.1.5 published on PyPi does not support the `devices`
-and `restart`options. The current development version of `podman-compose` implements `devices`, 
+and `restart`options. The current development version of `podman-compose` implements `devices`,
 but is broken at
 https://github.com/containers/podman-compose/blob/64ed5545437c1348b65b5f9a4298c2212d3d6419/podman_compose.py#L1079
 
 https://github.com/containers/podman-compose/pull/180 implements `restart` and fixes broken code.
+
+## Open issues
+
+Won't create ready-to-use db smoothly without user interference.
+TODO: Integrate the following manual fix into entry point at first launch on nonexistant db.
+
+If the pod is launched on an empty database directory (i.e. the default `/mnt/db`),
+then a new databse is created. In order to provide continuous oplog backups,
+the standard configuration has mongodb's replica set mechanism (with only
+a single primary and no secondaries) activated. Otherwise, mongod won't write
+oplog.
+
+Adapt snippet `init_rs.js` (part of `mongod_backup`) to match used host and port.
+
+Enter the freshly running `mongodb` container, i.e. via
+
+    podman exec -it mongodb bash
+
+enter the mongo shell with
+
+    mongo --tls --tlsCAFile /run/secrets/rootCA.pem --tlsCertificateKeyFile \
+        /run/secrets/mongodb/tls_key_cert.pem --host mongodb
+
+and run the adapted `init_rs.js` snippet, i.e.
+
+    > rs.initiate( {
+       _id : "rs0",
+       members: [
+          { _id: 0, host: "simdata.vm.uni-freiburg.de:27017" },
+       ]
+    })
+    { "ok" : 1 }
+    rs0:SECONDARY> exit
+
+Note that the prompt changes from `>` to `rs0:SECONDARY>`.
+Now, on relogin into the mongo shell, the prompt should read
+
+    rs0:PRIMARY>
+
+and we create the admin user manually with
+
+    rs0:PRIMARY> use admin
+    rs0:PRIMARY> db.createUser({
+    ...     user: "admin",
+    ...     pwd: passwordPrompt(),
+    ...     roles: [ { role: "userAdminAnyDatabase", db: "admin" }, "readWriteAnyDatabase" ]
+    ...     }
+    ... )
+    Enter password: 
+    Successfully added user: {
+        "user" : "admin",
+        "roles" : [
+            {
+                "role" : "userAdminAnyDatabase",
+                "db" : "admin"
+            },
+            "readWriteAnyDatabase"
+        ]
+    }
+
+
+and a password in accord with what was provided via `/run/secrets/mongodb/password`.
+Eventually, exit and restart the mongodb container (or the whole pod).
+
 
 ### Debugging
 
@@ -159,6 +223,26 @@ end it, i.e. with `kill 41`, to release all database files, and purge the databa
 
     rm -rf /data/db/*
 
+
+### Restore database
+
+For a full restore with oplog replay, create the role
+
+    db.createRole(
+        {
+            role: "anyActionOnAnyResource",
+            privileges: [
+                { resource: { anyResource: true }, actions: ['anyAction'] },
+            ],
+            roles: []
+        }
+    )
+
+and grant it to the `admin` user via
+
+    db.grantRolesToUser("admin", ["anyActionOnAnyResource"])
+
+before running the `mongodb-backup`'s `full_restore.sh`.
 
 ## References
 
