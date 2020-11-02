@@ -244,6 +244,64 @@ and grant it to the `admin` user via
 
 before running the `mongodb-backup`'s `full_restore.sh`.
 
+
+### Repair database
+
+If the database got corrupted and mongod won't launch anymore, stop all pods and containers and prune with
+
+    podman container prune
+
+then run a repair instance once, i.e. with
+
+    podman run -d --name=mongodb --security-opt label=disable \
+        -e MONGO_INITDB_ROOT_USERNAME_FILE=/run/secrets/mongodb/username -e MONGO_INITDB_ROOT_PASSWORD_FILE=/run/secrets/mongodb/password \
+        -e TZ=Europe/Berlin -v /mnt/db:/data/db --add-host mongodb:127.0.0.1 --restart no mongod-on-smb --repair --config /etc/mongod.conf
+
+Next, we will have to reinitialize the replication set. Prune the previous container again and a standalone instance with
+
+    podman run -d --name=mongodb --security-opt label=disable \
+        -e MONGO_INITDB_ROOT_USERNAME_FILE=/run/secrets/mongodb/username -e MONGO_INITDB_ROOT_PASSWORD_FILE=/run/secrets/mongodb/password \
+        -e TZ=Europe/Berlin -v /mnt/db:/data/db --restart no \
+        mongod-on-smb --auth --tlsMode requireTLS --tlsCertificateKeyFile /run/secrets/mongodb/tls_key_cert.pem --tlsCAFile /run/secrets/rootCA.pem
+
+All configuration options happen on the command line to render the `repSet` options within the config file inneffective. 
+Enter the mongo shell on the running instance, i.e. with
+
+    podman exec -it mongodb \
+        mongo --tls --tlsCAFile /run/secrets/rootCA.pem --tlsCertificateKeyFile \
+        /run/secrets/mongodb/tls_key_cert.pem --host mongodb
+
+and, as above, grant the `anyActionOnAnyResource` role to the admin user. Drop the `local` database with
+
+    use local
+    db.dropDatabase()
+
+and start as usual, i.e. with
+
+    podman-compose up -d
+
+to reactivate the replica set with
+
+    rs.initiate( {
+       _id : "rs0",
+       members: [
+          { _id: 0, host: "simdata.vm.uni-freiburg.de:27017" },
+       ]
+    })
+
+after identifying as admin within the mongos shell. Restart with 
+
+    podman-compose restart mongodb
+
+and confirm that the mongo prompt reads
+
+    rs0:PRIMARY>
+
+again.
+
+(https://medium.com/@cjandsilvap/from-a-replica-set-to-a-standalone-mongodb-79fda2beaaaf)
+
+
 ## References
 
 - Certificates:
